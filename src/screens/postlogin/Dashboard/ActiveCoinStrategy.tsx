@@ -1,29 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import 'react-datepicker/dist/react-datepicker.css';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 // import { useParams } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ReactLoading from 'react-loading';
 import ChartCanvasContainer from '../../../components/ChartCanvasContainer';
-// import PaginationBar from '../../../components/PaginationBar';
-import { updateCoinsList } from '../../../redux/reducer';
-import { getCryptoCoinsList, sellCoinForStrategy } from '../../../services/api';
 import Modal from './AdminModal';
 import DashboardStrategyTable from './DashboardStrategyTable';
 import CustomDropdown from '../../../components/CustomDropdown';
+import getStockName, { getStockData } from '../../../services/api';
 
-function AslgoTradingDashboard() {
+function AlgoTradingDashboard() {
   const [pageNo, setPageNo] = useState(1);
   const { coinsList } = useSelector((state: any) => state);
-  const dispatch = useDispatch();
-  const [showChart, setShowChart] = useState(true);
-  // const param = useParams();
-  // const [tableData, setTableData] = useState([]);
-  // const [selectedStrategy, setSelectedStrategy] = useState<any>();
-  // const [activeCoinsTotalCount, setActiveCoinsTotalCount] = useState<any>(0);
-  // const [activeCoinPageCount, setActiveCoinPageCount] = useState<any>(0);
+  const [tokenName, setTokenName] = useState();
+  const [laodingData, setLaodingData] = useState(false);
 
   const [toDeleteData, setToDeleteData] = useState<any>(null);
   // const [state, setState] = useState<any>([
@@ -35,11 +29,6 @@ function AslgoTradingDashboard() {
   // ]);
   const [timeData, setTimeData] = useState<any>();
 
-  // const [limitCount, setLimit] = useState<any>(10);
-  // const [laodingData, setLoadingData] = useState(false);
-  // const [coinData, setCoinData] = useState();
-  // const strategyData: any = [];
-
   const timeOptions = [
     { label: '1m', value: '1m' },
     { label: '5m', value: '5m' },
@@ -48,52 +37,38 @@ function AslgoTradingDashboard() {
     { label: '1d', value: '1d' },
   ];
 
-  const ele: any = useRef(null);
-  const handleScroll = async () => {
-    if (
-      showChart === false &&
-      ele.current &&
-      ele.current.getBoundingClientRect().top - window.scrollY < 300 &&
-      ele.current.getBoundingClientRect().top - window.scrollY > 0
-    ) {
-      setShowChart(true);
+  const getInstrument = async () => {
+    try {
+      const res: any = await getStockName();
+      setTokenName(res);
+      console.log('res', res);
+      console.log('tokenName', tokenName);
+    } catch (error) {
+      console.log('error', error);
     }
   };
 
-  const getCoinsListForDropdown = async () => {
-    const res: any = await getCryptoCoinsList();
-    const modRes = res.map((rItem: any) => ({ label: rItem.symbol, value: rItem.cryptoCoin }));
-    dispatch(updateCoinsList(modRes));
-  };
-
-  const onSellConfirm = async () => {
+  const getDataStok = async () => {
     try {
-      // todo: integrate api
-      console.log('data to be deleted => ', toDeleteData);
-      const res: any = await sellCoinForStrategy({
-        strategyName: toDeleteData.strategyName,
-        coinToSell: toDeleteData.symbol,
-      });
-
-      toast.success(res.message);
-      setToDeleteData(null);
-    } catch (err) {
-      toast.error(`${err}`);
+      setLaodingData(true);
+      const res = await getStockData();
+      console.log('res', res);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      setLaodingData(false);
     }
   };
 
   useEffect(() => {
-    ele.current = document.getElementById('id-CandleStickChart');
-    if (!coinsList.length) {
-      getCoinsListForDropdown();
-    }
-    window.addEventListener('scroll', handleScroll);
+    getInstrument();
+    getDataStok();
   }, []);
 
   return (
     <div className="m-10">
       {/* SPINNER */}
-      {/* <div
+      <div
         style={{
           position: 'fixed',
           left: '50%',
@@ -102,8 +77,8 @@ function AslgoTradingDashboard() {
           zIndex: 10,
         }}
       >
-        {isLoadingForActiveDormant || laodingData ? <ReactLoading type="spokes" color="#2626D9" /> : <></>}
-      </div> */}
+        {laodingData ? <ReactLoading type="spokes" color="#2626D9" /> : <></>}
+      </div>
       <Modal show={toDeleteData}>
         <div className="flex justify-center h-full m-4">
           <div className="bg-theme-v2-white1 rounded">
@@ -120,7 +95,7 @@ function AslgoTradingDashboard() {
                 className="rounded text-theme-v2-blue2"
                 style={{ padding: ' 16px 40px' }}
                 onClick={() => {
-                  setToDeleteData(null);
+                  // setToDeleteData(null);
                 }}
               >
                 Cancel
@@ -129,7 +104,7 @@ function AslgoTradingDashboard() {
                 type="button"
                 className="rounded text-theme-v2-white1 bg-theme-v2-red1"
                 style={{ padding: ' 16px 40px' }}
-                onClick={() => onSellConfirm()}
+                // onClick={() => onSellConfirm()}
               >
                 Sell
               </button>
@@ -138,22 +113,11 @@ function AslgoTradingDashboard() {
         </div>
       </Modal>
       <div className="flex mt-10 mb-5 gap-4">
-        {/* trades */}
         <div className="flex-1">
           <div className="bg-theme-v2-white1 border border-theme-v2-blue4 rounded-lg">
-            {/* Top Performing Strategies */}
             <div className="flex justify-between px-5 border-b border-theme-v2-blue4">
-              <p className="py-4 px-4 text-theme-v2-blue2 text-[18px] font-bold ">Coin Data </p>
-              {/* todo filters etc */}
-              {/* <img src={calendarIcon} alt="calendar" />{' '} */}
+              <p className="py-4 px-4 text-theme-v2-blue2 text-[18px] font-bold ">Stocks Data </p>
               <div className="flex mr-1">
-                {/* <AiOutlineCalendar size={60}> */}
-                {/* <ReactDatePicker
-                  selected={startDate}
-                  onChange={(date: any) => setStartDate(date)}
-                  showPopperArrow
-                  className="flex mt-4 mr-1"
-                /> */}
                 <div className="m-4">
                   <CustomDropdown
                     options={timeOptions}
@@ -165,44 +129,21 @@ function AslgoTradingDashboard() {
                     minWidth="200px"
                   />
                 </div>
-                {/* <div>
-                  <button
-                    type="button"
-                    onClick={() => setOpen(!open)}
-                    style={{ marginTop: '1rem', marginRight: '1rem' }}
-                  >
-                    {!open ? (
-                      <BsFillCalendarPlusFill size={35} color="#0000FF" />
-                    ) : (
-                      <BsCalendar2MinusFill size={35} color="#FF0000" />
-                    )}
-                  </button>
-                  {open && (
-                    <DateRange
-                      showDateDisplay
-                      // editableDateInputs
-                      onChange={(item) => setState([item.selection])}
-                      moveRangeOnFirstSelection={false}
-                      ranges={state}
-                      displayMode="dateRange"
-                    />
-                  )}
-                </div> */}
               </div>
             </div>
             <div className="flex w-80 h-full bg-theme-v2-white1" id="id-CandleStickChart">
               <div className="flex-1 py-4 px-5 border-r border-theme-v2-blue4">
-                {showChart && (
-                  <ChartCanvasContainer
-                    widthRatio={0.9}
-                    textFillOHLC="#444444"
-                    coinVal="BTCUSDT"
-                    // values={topPerformingStrategyList}
-                    // backTestData={tableData}
-                    // dateState={state}
-                    interval={timeData}
-                  />
-                )}
+                {/* {showChart && ( */}
+                <ChartCanvasContainer
+                  widthRatio={0.9}
+                  textFillOHLC="#444444"
+                  coinVal="BTCUSDT"
+                  // values={topPerformingStrategyList}
+                  // backTestData={tableData}
+                  // dateState={state}
+                  interval={timeData}
+                />
+                {/* )} */}
               </div>
             </div>
           </div>
@@ -244,4 +185,4 @@ function AslgoTradingDashboard() {
     </div>
   );
 }
-export default AslgoTradingDashboard;
+export default AlgoTradingDashboard;
