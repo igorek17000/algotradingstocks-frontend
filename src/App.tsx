@@ -1,6 +1,6 @@
 // import { useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import AlgoTradingDashboard from './screens/postlogin/Dashboard/ActiveCoinStrategy';
+import AlgoTradingDashboard from './screens/postlogin/Dashboard/AlgoTradingDashboard';
 // import ActiveCoinStrategy from './screens/postlogin/Dashboard/ActiveCoinStrategy';
 
 function App() {
