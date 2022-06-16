@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@font-face {
+  font-family: 'Inter';
+  src: local('Inter'), url(./assets/fonts/Inter-Regular.ttf) format('ttf');
+}
+@tailwind utilities;
+
+html {
+  font-size: 18px;
+}
+
+.absolute {
+  position: absolute;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hideScrollBar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.hideScrollBar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.trade-fuction-row-custom-height {
+  min-height: 3.5rem;
+  max-height: min-content;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  background: #72d24c22;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #72d24c;
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #72d24c;
+}
