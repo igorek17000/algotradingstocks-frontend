@@ -59,7 +59,7 @@ any) => (
   //   const param = useParams();
   //   return
   <div className="flex justify-center pb-4 bg-theme-v2-white1">
-    <Table className="flex w-full h-full text-center  rounded-lg border">
+    <Table className=" w-full h-full text-center  rounded-lg border">
       <thead className="border border-theme-v2-blue4">
         {showInternalHeader && (
           <>
@@ -67,10 +67,10 @@ any) => (
               <th colSpan={2} className="text-left py-4 px-5 text-theme-v2-blue2 text-[18px]">
                 Trades
               </th>
-              <th colSpan={9} className="px-5">
+              {/* <th colSpan={9} className="px-5">
                 <div className="flex justify-end">
                   <div className="flex m-1">
-                    {/* <div className="mr-1">
+                    <div className="mr-1">
                       <SearchBar
                         onFilterChange={(e: any) => {
                           console.log(e);
@@ -90,10 +90,10 @@ any) => (
                         strategies={strategies}
                         showResetButton
                       />
-                    </div> */}
+                    </div>
                   </div>
                 </div>
-              </th>
+              </th> */}
             </tr>
           </>
         )}

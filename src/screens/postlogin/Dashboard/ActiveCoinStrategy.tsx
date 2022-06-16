@@ -10,7 +10,7 @@ import ChartCanvasContainer from '../../../components/ChartCanvasContainer';
 // import PaginationBar from '../../../components/PaginationBar';
 import { updateCoinsList } from '../../../redux/reducer';
 import { getCryptoCoinsList, sellCoinForStrategy } from '../../../services/api';
-import Modal from '../Admin/AdminModal';
+import Modal from './AdminModal';
 import DashboardStrategyTable from './DashboardStrategyTable';
 import CustomDropdown from '../../../components/CustomDropdown';
 
