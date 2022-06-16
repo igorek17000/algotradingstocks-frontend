@@ -11,12 +11,12 @@ import ChartCanvasContainer from '../../../components/ChartCanvasContainer';
 import Modal from './AdminModal';
 import DashboardStrategyTable from './DashboardStrategyTable';
 import CustomDropdown from '../../../components/CustomDropdown';
-import getStockName, { getStockData } from '../../../services/api';
+import getStockName, { getHistoricalData, getStockData } from '../../../services/api';
 
 function AlgoTradingDashboard() {
   const [pageNo, setPageNo] = useState(1);
   const { coinsList } = useSelector((state: any) => state);
-  const [tokenName, setTokenName] = useState();
+  const [instrumentToken, setInstrumentToken] = useState([]);
   const [laodingData, setLaodingData] = useState(false);
 
   const [toDeleteData, setToDeleteData] = useState<any>(null);
@@ -27,32 +27,68 @@ function AlgoTradingDashboard() {
   //     key: 'selection',
   //   },
   // ]);
-  const [timeData, setTimeData] = useState<any>();
+  const [timeData, setTimeData] = useState<any>('1m');
+  const [candleData, setCandleData] = useState<any>([]);
 
   const timeOptions = [
     { label: '1m', value: '1m' },
+    { label: '3m', value: '3m' },
     { label: '5m', value: '5m' },
+    { label: '10m', value: '10m' },
     { label: '15m', value: '15m' },
+    { label: '30m', value: '30m' },
     { label: '1h', value: '1h' },
     { label: '1d', value: '1d' },
   ];
+  console.log('instrumentToken', instrumentToken);
 
   const getInstrument = async () => {
     try {
-      const res: any = await getStockName();
-      setTokenName(res);
-      console.log('res', res);
-      console.log('tokenName', tokenName);
+      setLaodingData(true);
+      const itoken = 'tata steel';
+      const res: any = await getStockName(itoken);
+      res.map((token: any, index: any) => setInstrumentToken(token[index].instrument_token));
     } catch (error) {
       console.log('error', error);
+      setLaodingData(false);
+    } finally {
+      setLaodingData(false);
     }
   };
 
-  const getDataStok = async () => {
+  const getBackTest = async () => {
+    try {
+      // setLaodingData(true);
+      const data = {
+        instrumentTokens: instrumentToken,
+        date: '2022-06-14 00:00:37',
+        stratInputs: {
+          stopLimitPer: 0.9,
+          stopLossPer: 0.8,
+          sharesQuantity: 10,
+        },
+      };
+      const res = await getStockData(data);
+      console.log('res', res);
+    } catch (error) {
+      console.log('error', error);
+    } finally {
+      // setLaodingData(false);
+    }
+  };
+
+  const getHistoricalDataStock = async () => {
     try {
       setLaodingData(true);
-      const res = await getStockData();
-      console.log('res', res);
+      const data = {
+        instruToken: 895745,
+        interval: timeData,
+        startDate: '2022-06-16T10:49:21.446Z',
+        endDate: '2022-06-16T10:49:21.446Z',
+      };
+      const res = await getHistoricalData(data);
+      setCandleData(res.data);
+      console.log('candleData', candleData);
     } catch (error) {
       console.log('error', error);
     } finally {
@@ -62,7 +98,8 @@ function AlgoTradingDashboard() {
 
   useEffect(() => {
     getInstrument();
-    getDataStok();
+    getBackTest();
+    getHistoricalDataStock();
   }, []);
 
   return (
@@ -121,7 +158,7 @@ function AlgoTradingDashboard() {
                 <div className="m-4">
                   <CustomDropdown
                     options={timeOptions}
-                    placeholder={timeOptions[3].value || 'Select Interval'}
+                    placeholder="Select Interval"
                     selectedValue={(val: any) => {
                       setTimeData(val.value);
                     }}
@@ -135,6 +172,7 @@ function AlgoTradingDashboard() {
               <div className="flex-1 py-4 px-5 border-r border-theme-v2-blue4">
                 {/* {showChart && ( */}
                 <ChartCanvasContainer
+                  candleData={candleData}
                   widthRatio={0.9}
                   textFillOHLC="#444444"
                   coinVal="BTCUSDT"

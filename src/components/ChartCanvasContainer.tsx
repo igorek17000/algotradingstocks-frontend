@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import {
   ChartCanvas,
   lastVisibleItemBasedZoomAnchor,
@@ -20,15 +20,15 @@ import {
 // import useWebSocket from 'react-use-websocket'; // , { ReadyState }
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
-import useWebSocket from 'react-use-websocket';
-import candleService from '../services/candleService';
+// import useWebSocket from 'react-use-websocket';
+// import candleService from '../services/candleService';
 import './CandleStick.css';
 
 // let some = false;
 
 const ChartCanvasContainer = ({
+  candleData,
   backTestData,
-  coinVal = 'BTCUSDT',
   widthRatio = 0.9,
   textFillOHLC = 'white',
   interval = '1h',
@@ -36,8 +36,8 @@ const ChartCanvasContainer = ({
 // ,
 any) => {
   const candleHeight = useRef(0);
-  const socketUrl = `wss://stream.binance.com:9443/ws/${coinVal.toLowerCase()}@kline_${interval}`;
-  const candleData = useRef([]);
+  // const socketUrl = `wss://stream.binance.com:9443/ws/${coinVal.toLowerCase()}@kline_${interval}`;
+  // const candleData = useRef([]);
   const calculatedData = useRef<any>();
   const OHLCdata = useRef<any>(null);
   const movingAverageTooltipValue: any = [];
@@ -51,11 +51,6 @@ any) => {
 
   const elderRayHeight = 50;
 
-  // const candleWithoutHeight = 450;
-
-  // const barChartHeight = gridHeight / 4;
-  // const barChartOrigin = (_: any, h: any) => [0, h - barChartHeight - elderRayHeight];
-
   const chartHeight = gridHeight - elderRayHeight;
   const openCloseColor = (OCcolordata: any) => (OCcolordata.close > OCcolordata.open ? '#26a69a' : '#ef5350');
   const yEdgeIndicator = (EdgeIndData: any) => EdgeIndData.close;
@@ -65,34 +60,8 @@ any) => {
   const dateTimeFormat = '%Y-%m-%d, %X';
   const timeDisplayFormat = timeFormat(dateTimeFormat);
 
-  useEffect(() => {
-    candleService.getCandleData(coinVal, interval).then((d: any) => {
-      candleData.current = d;
-    });
-    // }
-  }, [coinVal, interval]);
-
-  const { lastMessage } = useWebSocket(socketUrl);
-  if (lastMessage && lastMessage.data) {
-    const parsedData = JSON.parse(lastMessage?.data);
-    const latestData: any = {
-      date: parsedData.E,
-      open: parseFloat(parsedData.k.o),
-      low: parseFloat(parsedData.k.l),
-      high: parseFloat(parsedData.k.h),
-      close: parseFloat(parsedData.k.c),
-      volume: parseFloat(parsedData.k.v),
-    };
-    OHLCdata.current = latestData;
-    const newCandle: any = candleData.current;
-    newCandle.pop();
-    newCandle.push(latestData);
-    candleData.current = newCandle;
-  }
-  // }, [lastMessage1]);
-
   const xScaleProvider = discontinuousTimeScaleProvider.inputDateAccessor((d) => new Date(d.date));
-  calculatedData.current = candleData.current;
+  calculatedData.current = candleData;
   //! processing chart data based on the indicators selected.
 
   const { data, xScale, xAccessor, displayXAccessor } = xScaleProvider(calculatedData.current);
