@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import 'react-date-range/dist/styles.css'; // main css file
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import 'react-datepicker/dist/react-datepicker.css';
-import { useSelector } from 'react-redux';
-// import { useParams } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactLoading from 'react-loading';
@@ -15,7 +13,6 @@ import getStockName, { getHistoricalData, getStockData } from '../../../services
 
 function AlgoTradingDashboard() {
   const [pageNo, setPageNo] = useState(1);
-  const { coinsList } = useSelector((state: any) => state);
   const [instrumentToken, setInstrumentToken] = useState([]);
   const [laodingData, setLaodingData] = useState(false);
 
@@ -194,7 +191,7 @@ function AlgoTradingDashboard() {
           toDelete={(rowData: any) => setToDeleteData(rowData)}
           page={pageNo}
           // selectedStrategy={(e: any) => onHandleSearch(e)}
-          coinsList={coinsList}
+          // coinsList={coinsList}
           onReset={() => {
             setPageNo(1);
             // setSelectedStrategy(null);

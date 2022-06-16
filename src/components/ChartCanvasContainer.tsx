@@ -17,14 +17,9 @@ import {
   Annotate,
   LabelAnnotation,
 } from 'react-financial-charts';
-// import useWebSocket from 'react-use-websocket'; // , { ReadyState }
 import { format } from 'd3-format';
 import { timeFormat } from 'd3-time-format';
-// import useWebSocket from 'react-use-websocket';
-// import candleService from '../services/candleService';
 import './CandleStick.css';
-
-// let some = false;
 
 const ChartCanvasContainer = ({
   candleData,
@@ -36,8 +31,6 @@ const ChartCanvasContainer = ({
 // ,
 any) => {
   const candleHeight = useRef(0);
-  // const socketUrl = `wss://stream.binance.com:9443/ws/${coinVal.toLowerCase()}@kline_${interval}`;
-  // const candleData = useRef([]);
   const calculatedData = useRef<any>();
   const OHLCdata = useRef<any>(null);
   const movingAverageTooltipValue: any = [];
@@ -99,17 +92,8 @@ any) => {
       zoomAnchor={lastVisibleItemBasedZoomAnchor}
     >
       <CrossHairCursor />
-      {/* {!showKagiChart.current && ( */}
       <Chart id={0} height={chartHeight - candleHeight.current} yExtents={candleChartYExtents}>
-        <XAxis
-          showGridLines={false}
-          tickLabelFill="#7583FF"
-          ticks={5}
-          // tickFormat={(d) => {
-          //   console.log('d', d);
-          //   return new Date(d).toDateString();
-          // }}
-        />
+        <XAxis showGridLines={false} tickLabelFill="#7583FF" ticks={5} />
         <YAxis showGridLines={false} tickLabelFill="#7583FF" tickFormat={pricesDisplayFormat} />
         {backTestData && backTestData.length > 0 && (
           <>

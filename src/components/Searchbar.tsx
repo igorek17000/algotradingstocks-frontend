@@ -1,5 +1,5 @@
 import { Form, Formik } from 'formik';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import CustomDropdown from './CustomDropdown';
 
@@ -25,7 +25,7 @@ const SearchBar = ({
   showMaxAmount = false,
   showResetButton = false,
 }: any) => {
-  const { coinsList } = useSelector((state: any) => state);
+  // const { coinsList } = useSelector((state: any) => state);
   const location = useLocation();
   const param = useParams();
   const onFormSubmit = (values: any) => {
@@ -101,7 +101,7 @@ const SearchBar = ({
                     <CustomDropdown
                       placeholder={values.selectedCoin || 'Select coin'}
                       preSelectedValue={values.selectedCoin || 'Select coin'}
-                      options={coinsList}
+                      // options={coinsList}
                       searchable="true"
                       useThemev2="true"
                       selectedValue={(e: any) => {
