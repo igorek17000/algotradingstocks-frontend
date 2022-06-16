@@ -58,7 +58,7 @@ function AlgoTradingDashboard() {
 
   const getBackTest = async () => {
     try {
-      // setLaodingData(true);
+      setLaodingData(true);
       const data = {
         instrumentTokens: instrumentToken,
         date: '2022-06-14 00:00:37',
@@ -73,7 +73,7 @@ function AlgoTradingDashboard() {
     } catch (error) {
       console.log('error', error);
     } finally {
-      // setLaodingData(false);
+      setLaodingData(false);
     }
   };
 
