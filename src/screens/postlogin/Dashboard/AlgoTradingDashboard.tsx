@@ -5,27 +5,30 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactLoading from 'react-loading';
+// import AsyncSelect from 'react-select/async';
 import ChartCanvasContainer from '../../../components/ChartCanvasContainer';
 import Modal from './AdminModal';
 import DashboardStrategyTable from './DashboardStrategyTable';
 import CustomDropdown from '../../../components/CustomDropdown';
-import getStockName, { getHistoricalData, getStockData } from '../../../services/api';
+import { getHistoricalData, getStockData } from '../../../services/api';
+import loadOption from '../../../components/instruments';
+import PaginationBar from '../../../components/PaginationBar';
 
 function AlgoTradingDashboard() {
   const [pageNo, setPageNo] = useState(1);
-  const [instrumentToken, setInstrumentToken] = useState([]);
   const [laodingData, setLaodingData] = useState(false);
 
   const [toDeleteData, setToDeleteData] = useState<any>(null);
-  // const [state, setState] = useState<any>([
-  //   {
-  //     startDate: new Date(),
-  //     endDate: null,
-  //     key: 'selection',
-  //   },
-  // ]);
   const [timeData, setTimeData] = useState<any>('1m');
   const [candleData, setCandleData] = useState<any>([]);
+  const [cName, setCname] = useState<any>(319233);
+  const [tableData, setTableData] = useState<any>();
+  const [limitCount, setLimit] = useState<any>(10);
+  const [totalCount, setTotalCount] = useState<any>(0);
+  const [activeCoinPageCount, setActiveCoinPageCount] = useState<any>(0);
+
+  // const loadOption: any = [];
+  // const [loadOption, setLoadOptions] = useState([{ label: '', value: '' }]);
 
   const timeOptions = [
     { label: '1m', value: '1m' },
@@ -37,36 +40,25 @@ function AlgoTradingDashboard() {
     { label: '1h', value: '1h' },
     { label: '1d', value: '1d' },
   ];
-  console.log('instrumentToken', instrumentToken);
-
-  const getInstrument = async () => {
-    try {
-      setLaodingData(true);
-      const itoken = 'tata steel';
-      const res: any = await getStockName(itoken);
-      res.map((token: any, index: any) => setInstrumentToken(token[index].instrument_token));
-    } catch (error) {
-      console.log('error', error);
-      setLaodingData(false);
-    } finally {
-      setLaodingData(false);
-    }
-  };
 
   const getBackTest = async () => {
     try {
       setLaodingData(true);
       const data = {
-        instrumentTokens: instrumentToken,
-        date: '2022-06-14 00:00:37',
+        // instrumentTokens: parseInt(cName, 10),
+        instrumentTokens: [cName],
+        date: '2022-06-16 00:00:37',
         stratInputs: {
-          stopLimitPer: 0.9,
-          stopLossPer: 0.8,
+          stopLimitPer: 0.3,
+          stopLossPer: 0.3,
           sharesQuantity: 10,
         },
       };
       const res = await getStockData(data);
-      console.log('res', res);
+      setTableData(res.data[cName].allOrders);
+      setTotalCount(res.data[cName].allOrders.length);
+      setActiveCoinPageCount(Math.ceil(res.data[cName].allOrders.length / limitCount));
+      console.log('activeCoinPageCount', activeCoinPageCount);
     } catch (error) {
       console.log('error', error);
     } finally {
@@ -78,14 +70,13 @@ function AlgoTradingDashboard() {
     try {
       setLaodingData(true);
       const data = {
-        instruToken: 895745,
+        instruToken: cName,
         interval: timeData,
         startDate: '2022-06-16T10:49:21.446Z',
         endDate: '2022-06-16T10:49:21.446Z',
       };
       const res = await getHistoricalData(data);
       setCandleData(res.data);
-      console.log('candleData', candleData);
     } catch (error) {
       console.log('error', error);
     } finally {
@@ -93,11 +84,15 @@ function AlgoTradingDashboard() {
     }
   };
 
+  const onHandlePageClick = async (e: number) => {
+    console.log('e', e);
+    setPageNo(e);
+  };
+
   useEffect(() => {
-    getInstrument();
-    getBackTest();
     getHistoricalDataStock();
-  }, []);
+    getBackTest();
+  }, [timeData, cName]);
 
   return (
     <div className="m-10">
@@ -154,6 +149,26 @@ function AlgoTradingDashboard() {
               <div className="flex mr-1">
                 <div className="m-4">
                   <CustomDropdown
+                    options={loadOption}
+                    placeholder="Search Company"
+                    selectedValue={(e: any) => {
+                      console.log('e', e);
+                      setCname(e.value);
+                      console.log('cName', cName);
+                    }}
+                    searchable
+                    useThemev2="true"
+                    minWidth="200px"
+                  />
+                  {/* <AsyncSelect
+                    loadOptions={getLoadOptions}
+                    isSearchable
+                    onChange={(e: any) => setCname(e)}
+                    className="w-40"
+                  /> */}
+                </div>
+                <div className="m-4">
+                  <CustomDropdown
                     options={timeOptions}
                     placeholder="Select Interval"
                     selectedValue={(val: any) => {
@@ -174,7 +189,7 @@ function AlgoTradingDashboard() {
                   textFillOHLC="#444444"
                   coinVal="BTCUSDT"
                   // values={topPerformingStrategyList}
-                  // backTestData={tableData}
+                  backTestData={tableData}
                   // dateState={state}
                   interval={timeData}
                 />
@@ -187,7 +202,7 @@ function AlgoTradingDashboard() {
       {/* {cointable} */}
       <div className="bg-theme-v2-white1 border border-theme-v2-blue4 rounded-lg">
         <DashboardStrategyTable
-          // tableData={tableData}
+          tableData={tableData}
           toDelete={(rowData: any) => setToDeleteData(rowData)}
           page={pageNo}
           // selectedStrategy={(e: any) => onHandleSearch(e)}
@@ -198,22 +213,18 @@ function AlgoTradingDashboard() {
             // tradeListData({ page: 1, strategyName: '' });
           }}
         />
-        {/* {activeCoinPageCount > 0 ? (
-          <PaginationBar
-            limit={limitCount}
-            setLimit={(e: number) => setLimit(e)}
-            page={pageNo}
-            totalRecords={activeCoinsTotalCount}
-            pageCount={activeCoinPageCount}
-            limitOptions={[1, 2]}
-            // onHandlePageClick={(e: number) => {
-            //   onHandlePageClick(e);
-            // }}
-            isThemeV2="true"
-          />
-        ) : (
-          ''
-        )} */}
+        <PaginationBar
+          limit={limitCount}
+          setLimit={(e: number) => setLimit(e)}
+          page={pageNo}
+          totalRecords={totalCount}
+          pageCount={activeCoinPageCount}
+          limitOptions={[10, 20]}
+          onHandlePageClick={(e: number) => {
+            onHandlePageClick(e);
+          }}
+          isThemeV2="true"
+        />
       </div>
 
       <ToastContainer />
