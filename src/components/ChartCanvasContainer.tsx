@@ -26,7 +26,6 @@ const ChartCanvasContainer = ({
   backTestData,
   widthRatio = 0.9,
   textFillOHLC = 'white',
-  interval = '1h',
 }: // dateState = '0',
 // ,
 any) => {
@@ -74,7 +73,7 @@ any) => {
     fontSize: 30,
     fill: 'red',
     text: '⬇',
-    y: 50,
+    y: 600,
   };
 
   return (
@@ -103,17 +102,8 @@ any) => {
                 (d) =>
                   backTestData.some(
                     (e: any) =>
-                      // console.log('=>', new Date(e.dateTime).setSeconds(0, 0), d.date),
-                      (e.dateEpoch === d.date?.toString() && e.signal === 'buy') || interval === '1d'
-                        ? new Date(e.dateTime).toUTCString().slice(0, 15) ===
-                            new Date(d.date).toUTCString().slice(0, 15) && e.side === 'buy'
-                        : new Date(e.dateTime).setUTCSeconds(0, 0) === d.date && e.side === 'buy',
-                    // console.log(
-                    //   new Date(e.dateTime).toUTCString().slice(0, 15),
-                    //   '=>',
-                    //   new Date(d.date).toUTCString().slice(0, 15),
-                    // ),
-                    // console.log('backTestData', backTestData),
+                      // console.log('new Date(e.time).toUTCString()', new Date(e.time).toUTCString(), 'd', d),
+                      new Date(e.time).setSeconds(0, 0) === new Date(d.date).setSeconds(0, 0) && e.side === 'buy',
                   )
                 /* some condition */
               }
@@ -123,11 +113,9 @@ any) => {
               with={LabelAnnotation}
               when={
                 (d) =>
-                  backTestData.some((e: any) =>
-                    (e.dateEpoch === d.date?.toString() && e.signal === 'sell') || interval === '1d'
-                      ? new Date(e.dateTime).toUTCString().slice(0, 15) ===
-                          new Date(d.date).toUTCString().slice(0, 15) && e.side === 'sell'
-                      : new Date(e.dateTime).setUTCSeconds(0, 0) === d.date && e.side === 'sell',
+                  backTestData.some(
+                    (e: any) =>
+                      new Date(e.time).setSeconds(0, 0) === new Date(d.date).setSeconds(0, 0) && e.side === 'sell',
                   )
                 /* some condition */
               }
