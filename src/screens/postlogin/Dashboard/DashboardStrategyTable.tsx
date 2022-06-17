@@ -1,44 +1,21 @@
 import Table from 'react-bootstrap/Table';
 // import { useLocation, useParams } from 'react-router-dom';
-import deleteIcon from '../../../assets/images/deleteIcon.svg';
-import deleteIconRed from '../../../assets/images/deleteIconRed.svg';
 // import SearchBar from '../../../components/Searchbar';
 
-const TableBodyRowsComp = ({ rowData, index, toDelete, page }: any) => (
+const TableBodyRowsComp = ({ rowData, index, page }: any) => (
   <>
     <tr
       key={`${index}_${rowData.orderId}`}
       className={`${rowData.isManual === true ? `bg-theme-v2-orange1` : ``} flex-col py-4 border-b`}
     >
       <td className="p-3">{(page - 1) * 10 + index + 1 || index + 1}</td>
-      <td className="p-3">{rowData.symbol}</td>
-      <td className="p-3">{rowData.strategyName}</td>
-      <td className="p-3">{rowData.dateTime}</td>
-      <td className="p-3">{rowData.side}</td>
       <td className="p-3">{rowData.cost}</td>
       <td className="p-3">{rowData.price}</td>
-      <td className="p-3">{rowData.amount}</td>
-      <td className={`p-3 ${rowData.profit < 0 ? 'text-theme-v2-red1' : 'text-theme-v2-green1'}`}>{rowData.profit}</td>
-      <td className={`p-3 ${rowData.profitPercent < 0 ? 'text-theme-v2-red1' : 'text-theme-v2-green1'}`}>
-        {rowData.profitPercent}
-        {rowData.profitPercent && ' %'}
-      </td>
-      <td className="flex justify-center mt-2">
-        <button
-          type="button"
-          className={`${rowData.lastBuy === true ? 'flex px-4 py-2 rounded-lg' : 'flex px-4 py-2 rounded-lg'}`}
-          style={{
-            cursor: rowData.lastBuy === true ? 'pointer' : 'not-allowed',
-          }}
-          onClick={() => {
-            if (rowData.lastBuy === true) {
-              toDelete(rowData);
-            }
-          }}
-        >
-          <img src={rowData.lastBuy === true ? deleteIconRed : deleteIcon} alt="kill switch" />
-        </button>
-      </td>
+      <td className="p-3">{rowData.quantity}</td>
+      <td className="p-3">{rowData.side}</td>
+      <td className="p-3">{rowData.profit}</td>
+      <td className="p-3">{rowData.cummProfit}</td>
+      <td className="p-3">{rowData.time}</td>
     </tr>
   </>
 );
@@ -98,17 +75,14 @@ any) => (
           </>
         )}
         <tr className=" font-medium text-theme-v2-blue1">
-          <th className="p-3">S.No</th>
-          <th className="p-3">Coin</th>
-          <th className="p-3">Strategy</th>
-          <th className="p-3">Date</th>
-          <th className="p-3">Side</th>
+          <th className="p-3">No</th>
           <th className="p-3">Cost</th>
-          <th className="p-3">Current Price</th>
+          <th className="p-3">Price</th>
           <th className="p-3">Quantity</th>
           <th className="p-3">Profit</th>
-          <th className="p-3">Profit Percentage</th>
-          <th className="p-3 flex justify-center">Kill Switch</th>
+          <th className="p-3">Side</th>
+          <th className="p-3">CumProfit</th>
+          <th className="p-3">date</th>
         </tr>
       </thead>
       <tbody className="w-full text-theme-v2-black3">
